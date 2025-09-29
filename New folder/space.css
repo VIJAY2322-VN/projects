@@ -1,0 +1,39 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.parallax-section {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 1000px;
+    width: 1500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 5px 5px 5px #161717;
+    text-align: center;
+    font-size: 38px;
+
+}
+h2{
+    font-size: 55px;
+}
+#section1 {
+    background-image: url('laptop_background_1920x1080.png')
+}
+
+
+
+    
+
+.content-section p {
+    margin: 0 auto;
+    width: 80%;
+    font-size: 30px;
+
+
+}
