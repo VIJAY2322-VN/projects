@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Management System - Day 1 & 2 Integration</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9fafb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .day-tags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .day-tag {
+            background-color: var(--accent);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            background: #e5e7eb;
+            transition: background-color 0.3s;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .tab.active {
+            background: white;
+            font-weight: bold;
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .building-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .floor {
+            background-color: #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .floor h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .room {
+            background-color: white;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .room-consumption {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .pipeline {
+            stroke: #3b82f6;
+            stroke-width: 3;
+        }
+        
+        .tank {
+            fill: #93c5fd;
+            stroke: #1e40af;
+            stroke-width: 2;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .control-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .leak-indicator {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            margin-right: 8px;
+        }
+        
+        .leak-indicator.active {
+            background-color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .leak-event {
+            background-color: #fee2e2;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .data-output {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 900px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .building-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .day-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="day-tags">
+                <div class="day-tag">Day 1</div>
+                <div class="day-tag">Day 2</div>
+            </div>
+            <h1>Hostel Water Management System</h1>
+            <p>Integrated Solution: Layout Design & Data Simulation</p>
+        </header>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="layout">Layout Design</div>
+            <div class="tab" data-tab="simulation">Data Simulation</div>
+            <div class="tab" data-tab="integration">Integration View</div>
+        </div>
+        
+        <!-- Layout Design Tab -->
+        <div class="content-section active" id="layout-content">
+            <div class="card">
+                <h2>Hostel Layout Design</h2>
+                <p>The hostel consists of 3 floors with 6 rooms on each floor. Water is supplied from two main tanks through a pipeline system.</p>
+                
+                <div class="building-layout">
+                    <div class="floor">
+                        <h3>Floor 3</h3>
+                        <div class="room">Room 301 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 302 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 303 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 304 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 305 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 306 <span class="room-consumption">0 L</span></div>
+                    </div>
+                    
+                    <div class="floor">
+                        <h3>Floor 2</h3>
+                        <div class="room">Room 201 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 202 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 203 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 204 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 205 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 206 <span class="room-consumption">0 L</span></div>
+                    </div>
+                    
+                    <div class="floor">
+                        <h3>Floor 1</h3>
+                        <div class="room">Room 101 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 102 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 103 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 104 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 105 <span class="room-consumption">0 L</span></div>
+                        <div class="room">Room 106 <span class="room-consumption">0 L</span></div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Water Pipeline System</h3>
+                <svg width="100%" height="200" viewBox="0 0 400 200">
+                    <!-- Main tanks -->
+                    <rect x="50" y="50" width="60" height="100" class="tank" />
+                    <rect x="290" y="50" width="60" height="100" class="tank" />
+                    
+                    <!-- Pipeline system -->
+                    <line x1="110" y1="100" x2="150" y2="100" class="pipeline" />
+                    <line x1="150" y1="100" x2="150" y2="50" class="pipeline" />
+                    <line x1="150" y1="50" x2="250" y2="50" class="pipeline" />
+                    <line x1="150" y1="100" x2="250" y2="100" class="pipeline" />
+                    <line x1="150" y1="150" x2="250" y2="150" class="pipeline" />
+                    <line x1="250" y1="50" x2="250" y2="150" class="pipeline" />
+                    <line x1="250" y1="100" x2="290" y2="100" class="pipeline" />
+                    
+                    <!-- Labels -->
+                    <text x="80" y="40" text-anchor="middle">Main Tank 1</text>
+                    <text x="320" y="40" text-anchor="middle">Main Tank 2</text>
+                </svg>
+            </div>
+            
+            <div class="card">
+                <h2>Data Points to Track</h2>
+                <p>The following metrics will be tracked in the water management system:</p>
+                
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <h4>Water Flow</h4>
+                        <p>Measure flow rates at different pipeline points</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Tank Levels</h4>
+                        <p>Monitor water levels in both main tanks</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Room Consumption</h4>
+                        <p>Track individual room water usage</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Pressure Levels</h4>
+                        <p>Monitor water pressure in the system</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Temperature</h4>
+                        <p>Track water temperature variations</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Usage Patterns</h4>
+                        <p>Identify peak usage times and trends</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Simulation Tab -->
+        <div class="content-section" id="simulation-content">
+            <div class="card">
+                <h2>Simulation Controls</h2>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="studentCount">Number of Students</label>
+                        <input type="range" id="studentCount" min="50" max="200" value="100">
+                        <span id="studentCountValue">100</span>
+                    </div>
+                    <div class="control-group">
+                        <label for="leakProbability">Leak Probability (%)</label>
+                        <input type="range" id="leakProbability" min="0" max="100" value="10">
+                        <span id="leakProbabilityValue">10%</span>
+                    </div>
+                    <div class="control-group">
+                        <label for="usageIntensity">Usage Intensity (%)</label>
+                        <input type="range" id="usageIntensity" min="50" max="150" value="100">
+                        <span id="usageIntensityValue">100%</span>
+                    </div>
+                    <div class="control-group">
+                        <label for="simulationDays">Days to Simulate</label>
+                        <input type="number" id="simulationDays" min="1" max="30" value="7">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="leakDuration">Leak Duration (hours)</label>
+                    <input type="number" id="leakDuration" min="1" max="24" value="3">
+                </div>
+                
+                <button id="generateBtn" style="width: 100%; margin-top: 15px;">Generate Data</button>
+                <button id="leakTestBtn" style="width: 100%; margin-top: 10px; background-color: var(--danger);">Test Leak Scenario</button>
+            </div>
+            
+            <div class="card">
+                <h2>Simulation Status</h2>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Total Consumption</h3>
+                        <div class="value" id="totalConsumption">0 L</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Peak Usage</h3>
+                        <div class="value" id="peakUsage">0 L/h</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Leak Events</h3>
+                        <div class="value" id="leakCount">0</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3>Leak Detection <span class="leak-indicator" id="leakIndicator"></span></h3>
+                    <p id="leakStatus">No leaks detected</p>
+                </div>
+                
+                <div id="leakEventsContainer" style="margin-top: 20px; display: none;">
+                    <h3>Recent Leak Events</h3>
+                    <div id="leakEventsList">
+                        <!-- Leak events will be added here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Daily Water Usage Pattern</h2>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Weekly Water Consumption</h2>
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Integration View Tab -->
+        <div class="content-section" id="integration-content">
+            <div class="card">
+                <h2>Live Water Consumption by Room</h2>
+                <div class="building-layout">
+                    <div class="floor">
+                        <h3>Floor 3</h3>
+                        <div class="room">Room 301 <span class="room-consumption" id="room301">0 L</span></div>
+                        <div class="room">Room 302 <span class="room-consumption" id="room302">0 L</span></div>
+                        <div class="room">Room 303 <span class="room-consumption" id="room303">0 L</span></div>
+                        <div class="room">Room 304 <span class="room-consumption" id="room304">0 L</span></div>
+                        <div class="room">Room 305 <span class="room-consumption" id="room305">0 L</span></div>
+                        <div class="room">Room 306 <span class="room-consumption" id="room306">0 L</span></div>
+                    </div>
+                    
+                    <div class="floor">
+                        <h3>Floor 2</h3>
+                        <div class="room">Room 201 <span class="room-consumption" id="room201">0 L</span></div>
+                        <div class="room">Room 202 <span class="room-consumption" id="room202">0 L</span></div>
+                        <div class="room">Room 203 <span class="room-consumption" id="room203">0 L</span></div>
+                        <div class="room">Room 204 <span class="room-consumption" id="room204">0 L</span></div>
+                        <div class="room">Room 205 <span class="room-consumption" id="room205">0 L</span></div>
+                        <div class="room">Room 206 <span class="room-consumption" id="room206">0 L</span></div>
+                    </div>
+                    
+                    <div class="floor">
+                        <h3>Floor 1</h3>
+                        <div class="room">Room 101 <span class="room-consumption" id="room101">0 L</span></div>
+                        <div class="room">Room 102 <span class="room-consumption" id="room102">0 L</span></div>
+                        <div class="room">Room 103 <span class="room-consumption" id="room103">0 L</span></div>
+                        <div class="room">Room 104 <span class="room-consumption" id="room104">0 L</span></div>
+                        <div class="room">Room 105 <span class="room-consumption" id="room105">0 L</span></div>
+                        <div class="room">Room 106 <span class="room-consumption" id="room106">0 L</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>System Overview</h2>
+                <div class="chart-container">
+                    <canvas id="systemChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Real-time Data Output</h2>
+                <div class="data-output" id="dataOutput">
+                    {/* Data will be populated here by JavaScript */}
+                </div>
+                <button id="exportBtn" style="margin-top: 15px; width: 100%;">Export Data as JSON</button>
+            </div>
+        </div>
+        
+        <div class="day-navigation">
+            <button class="nav-btn" onclick="window.location.href='day1.html'">View Day 1 Only</button>
+            <button class="nav-btn" onclick="window.location.href='day2.html'">View Day 2 Only</button>
+            <button class="nav-btn" onclick="window.location.href='day3.html'">Next: Day 3</button>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let waterData = {
+            days: [],
+            leaks: [],
+            metrics: {
+                totalConsumption: 0,
+                peakUsage: 0,
+                leakCount: 0
+            },
+            roomData: {}
+        };
+        
+        // Initialize charts
+        let dailyChart, weeklyChart, systemChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            setupEventListeners();
+            generateData(); // Generate initial data
+            
+            // Initialize room data
+            for (let floor = 1; floor <= 3; floor++) {
+                for (let room = 1; room <= 6; room++) {
+                    const roomId = `${floor}0${room}`;
+                    waterData.roomData[roomId] = 0;
+                }
+            }
+        });
+        
+        function initializeCharts() {
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            dailyChart = new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'Water Consumption (L/h)',
+                        data: [],
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Liters per Hour'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+            weeklyChart = new Chart(weeklyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Total Daily Consumption (L)',
+                        data: [],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Liters'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const systemCtx = document.getElementById('systemChart').getContext('2d');
+            systemChart = new Chart(systemCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tank 1 Level', 'Tank 2 Level', 'Current Consumption'],
+                    datasets: [{
+                        data: [85, 65, 45],
+                        backgroundColor: [
+                            'rgba(37, 99, 235, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(`${this.dataset.tab}-content`).classList.add('active');
+                });
+            });
+            
+            // Simulation controls
+            document.getElementById('studentCount').addEventListener('input', function() {
+                document.getElementById('studentCountValue').textContent = this.value;
+            });
+            
+            document.getElementById('leakProbability').addEventListener('input', function() {
+                document.getElementById('leakProbabilityValue').textContent = `${this.value}%`;
+            });
+            
+            document.getElementById('usageIntensity').addEventListener('input', function() {
+                document.getElementById('usageIntensityValue').textContent = `${this.value}%`;
+            });
+            
+            document.getElementById('generateBtn').addEventListener('click', function() {
+                generateData();
+            });
+            
+            document.getElementById('leakTestBtn').addEventListener('click', function() {
+                simulateLeak();
+            });
+            
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                exportData();
+            });
+        }
+        
+        function generateData() {
+            const studentCount = parseInt(document.getElementById('studentCount').value);
+            const leakProbability = parseInt(document.getElementById('leakProbability').value);
+            const usageIntensity = parseInt(document.getElementById('usageIntensity').value);
+            const daysToSimulate = parseInt(document.getElementById('simulationDays').value);
+            
+            // Reset data
+            waterData = {
+                days: [],
+                leaks: [],
+                metrics: {
+                    totalConsumption: 0,
+                    peakUsage: 0,
+                    leakCount: 0
+                },
+                roomData: waterData.roomData
+            };
+            
+            // Generate data for each day
+            for (let day = 0; day < daysToSimulate; day++) {
+                const dayData = generateDailyData(studentCount, usageIntensity, day);
+                waterData.days.push(dayData);
+                
+                // Randomly add leaks based on probability
+                if (Math.random() * 100 < leakProbability) {
+                    const leak = generateLeakEvent(dayData, day);
+                    waterData.leaks.push(leak);
+                    waterData.metrics.leakCount++;
+                }
+                
+                waterData.metrics.totalConsumption += dayData.totalConsumption;
+                if (dayData.peakUsage > waterData.metrics.peakUsage) {
+                    waterData.metrics.peakUsage = dayData.peakUsage;
+                }
+            }
+            
+            updateUI();
+        }
+        
+        function generateDailyData(studentCount, intensity, dayIndex) {
+            const dayData = {
+                date: new Date(Date.now() - (dayIndex * 24 * 60 * 60 * 1000)).toLocaleDateString(),
+                hourlyData: [],
+                totalConsumption: 0,
+                peakUsage: 0
+            };
+            
+            // Base pattern: low at night, peaks in morning and evening
+            for (let hour = 0; hour < 24; hour++) {
+                let baseConsumption = 10; // Base usage during lowest periods
+                
+                if (hour >= 6 && hour <= 9) { // Morning peak
+                    baseConsumption = 80 + Math.random() * 40;
+                } else if (hour >= 17 && hour <= 21) { // Evening peak
+                    baseConsumption = 70 + Math.random() * 30;
+                } else if (hour >= 22 || hour <= 5) { // Night
+                    baseConsumption = 5 + Math.random() * 10;
+                } else { // Daytime
+                    baseConsumption = 30 + Math.random() * 20;
+                }
+                
+                // Adjust for number of students and usage intensity
+                const consumption = Math.round(baseConsumption * (studentCount / 100) * (intensity / 100));
+                
+                dayData.hourlyData.push({
+                    hour: hour,
+                    consumption: consumption
+                });
+                
+                dayData.totalConsumption += consumption;
+                if (consumption > dayData.peakUsage) {
+                    dayData.peakUsage = consumption;
+                }
+            }
+            
+            return dayData;
+        }
+        
+        function generateLeakEvent(dayData, dayIndex) {
+            const leakDuration = parseInt(document.getElementById('leakDuration').value);
+            const leakStartHour = Math.floor(Math.random() * (24 - leakDuration));
+            
+            // Increase consumption during leak period
+            for (let i = leakStartHour; i < leakStartHour + leakDuration; i++) {
+                if (i < 24) {
+                    // Increase consumption by 5-10 times during leak
+                    const leakMultiplier = 5 + Math.random() * 5;
+                    dayData.hourlyData[i].consumption = Math.round(dayData.hourlyData[i].consumption * leakMultiplier);
+                    dayData.hourlyData[i].leak = true;
+                }
+            }
+            
+            // Recalculate day totals
+            dayData.totalConsumption = dayData.hourlyData.reduce((sum, hour) => sum + hour.consumption, 0);
+            dayData.peakUsage = Math.max(...dayData.hourlyData.map(hour => hour.consumption));
+            
+            return {
+                date: dayData.date,
+                startHour: leakStartHour,
+                duration: leakDuration,
+                consumptionIncrease: dayData.hourlyData
+                    .slice(leakStartHour, leakStartHour + leakDuration)
+                    .reduce((sum, hour) => sum + hour.consumption, 0)
+            };
+        }
+        
+        function simulateLeak() {
+            // Use today's data for leak test
+            const todayData = waterData.days[0];
+            const leak = generateLeakEvent(todayData, 0);
+            
+            waterData.leaks.push(leak);
+            waterData.metrics.leakCount++;
+            
+            updateUI();
+        }
+        
+        function updateUI() {
+            // Update metrics
+            document.getElementById('totalConsumption').textContent = `${waterData.metrics.totalConsumption} L`;
+            document.getElementById('peakUsage').textContent = `${waterData.metrics.peakUsage} L/h`;
+            document.getElementById('leakCount').textContent = waterData.metrics.leakCount;
+            
+            // Update charts
+            updateCharts();
+            
+            // Update room consumption
+            updateRoomConsumption();
+            
+            // Update leak indicator
+            const leakIndicator = document.getElementById('leakIndicator');
+            const leakStatus = document.getElementById('leakStatus');
+            
+            if (waterData.metrics.leakCount > 0) {
+                leakIndicator.classList.add('active');
+                leakStatus.innerHTML = `<span style="color: var(--danger); font-weight: bold;">${waterData.metrics.leakCount} leak event(s) detected!</span>`;
+                
+                // Show leak events
+                const leakEventsContainer = document.getElementById('leakEventsContainer');
+                const leakEventsList = document.getElementById('leakEventsList');
+                
+                leakEventsContainer.style.display = 'block';
+                leakEventsList.innerHTML = '';
+                
+                waterData.leaks.slice(0, 3).forEach(leak => {
+                    const leakElement = document.createElement('div');
+                    leakElement.className = 'leak-event';
+                    leakElement.innerHTML = `
+                        <strong>${leak.date}</strong>: ${leak.duration}-hour leak starting at ${leak.startHour}:00<br>
+                        Additional consumption: ${leak.consumptionIncrease} liters
+                    `;
+                    leakEventsList.appendChild(leakElement);
+                });
+            } else {
+                leakIndicator.classList.remove('active');
+                leakStatus.textContent = 'No leaks detected';
+                document.getElementById('leakEventsContainer').style.display = 'none';
+            }
+            
+            // Update data output
+            document.getElementById('dataOutput').textContent = JSON.stringify(waterData, null, 2);
+        }
+        
+        function updateCharts() {
+            // Update daily chart with today's data
+            if (waterData.days.length > 0) {
+                const todayData = waterData.days[0];
+                dailyChart.data.datasets[0].data = todayData.hourlyData.map(hour => hour.consumption);
+                dailyChart.update();
+            }
+            
+            // Update weekly chart
+            if (waterData.days.length >= 7) {
+                const weekData = waterData.days.slice(0, 7).map(day => day.totalConsumption);
+                weeklyChart.data.datasets[0].data = weekData;
+                weeklyChart.update();
+            }
+            
+            // Update system chart with random values for demonstration
+            systemChart.data.datasets[0].data = [
+                70 + Math.random() * 20,
+                50 + Math.random() * 25,
+                30 + Math.random() * 40
+            ];
+            systemChart.update();
+        }
+        
+        function updateRoomConsumption() {
+            // Update room consumption values with random data for demonstration
+            for (let floor = 1; floor <= 3; floor++) {
+                for (let room = 1; room <= 6; room++) {
+                    const roomId = `${floor}0${room}`;
+                    // Add random consumption to each room
+                    waterData.roomData[roomId] += Math.floor(Math.random() * 10);
+                    document.getElementById(`room${roomId}`).textContent = `${waterData.roomData[roomId]} L`;
+                }
+            }
+        }
+        
+        function exportData() {
+            const dataStr = JSON.stringify(waterData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'water-data.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+    </script>
+</body>
+</html>

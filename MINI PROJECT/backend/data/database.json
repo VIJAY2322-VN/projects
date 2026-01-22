@@ -1,0 +1,46 @@
+{
+  "waterFlow": [],
+  "tankLevels": [],
+  "leaks": [],
+  "thresholds": {
+    "flowRate": {
+      "WARNING": 100,
+      "CRITICAL": 150
+    },
+    "continuousFlow": {
+      "DURATION_HOURS": 24,
+      "WARNING_AVG": 30,
+      "CRITICAL_AVG": 50
+    },
+    "nightUsage": {
+      "MIN_MEASUREMENTS": 10,
+      "WARNING_AVG": 15,
+      "CRITICAL_AVG": 25
+    },
+    "tankDrop": {
+      "TIME_WINDOW_MIN": 60,
+      "WARNING_DROP": 20,
+      "CRITICAL_DROP": 35
+    }
+  },
+  "rooms": {
+    "101": 0,
+    "102": 0,
+    "103": 0,
+    "104": 0,
+    "105": 0,
+    "106": 0,
+    "201": 0,
+    "202": 0,
+    "203": 0,
+    "204": 0,
+    "205": 0,
+    "206": 0,
+    "301": 0,
+    "302": 0,
+    "303": 0,
+    "304": 0,
+    "305": 0,
+    "306": 0
+  }
+}

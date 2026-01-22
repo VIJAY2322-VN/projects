@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Water Management - Day 1</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9fafb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .day-tag {
+            background-color: var(--accent);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .content-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .building-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .floor {
+            background-color: #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .floor h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .room {
+            background-color: white;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .pipeline {
+            stroke: #3b82f6;
+            stroke-width: 3;
+        }
+        
+        .tank {
+            fill: #93c5fd;
+            stroke: #1e40af;
+            stroke-width: 2;
+        }
+        
+        .data-points {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .data-item {
+            background-color: #eff6ff;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .data-model {
+            margin-top: 20px;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        pre {
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.4;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 900px) {
+            .content-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-points {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e5e7eb;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            width: 10%;
+            border-radius: 5px;
+        }
+        
+        .day-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="day-tag">Day 1</div>
+            <h1>Hostel Water Management System</h1>
+            <p>Design Layout and Data Points</p>
+        </header>
+        
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        
+        <div class="content-section">
+            <div class="card">
+                <h2>Hostel Layout Design</h2>
+                <p>The hostel consists of 3 floors with 6 rooms on each floor. Water is supplied from two main tanks through a pipeline system.</p>
+                
+                <div class="building-layout">
+                    <div class="floor">
+                        <h3>Floor 3</h3>
+                        <div class="room">Room 301</div>
+                        <div class="room">Room 302</div>
+                        <div class="room">Room 303</div>
+                        <div class="room">Room 304</div>
+                        <div class="room">Room 305</div>
+                        <div class="room">Room 306</div>
+                    </div>
+                    
+                    <div class="floor">
+                        <h3>Floor 2</h3>
+                        <div class="room">Room 201</div>
+                        <div class="room">Room 202</div>
+                        <div class="room">Room 203</div>
+                        <div class="room">Room 204</div>
+                        <div class="room">Room 205</div>
+                        <div class="room">Room 206</div>
+                    </div>
+                    
+                    <div class="floor">
+                        <h3>Floor 1</h3>
+                        <div class="room">Room 101</div>
+                        <div class="room">Room 102</div>
+                        <div class="room">Room 103</div>
+                        <div class="room">Room 104</div>
+                        <div class="room">Room 105</div>
+                        <div class="room">Room 106</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Water Pipeline System</h3>
+                <svg width="100%" height="200" viewBox="0 0 400 200">
+                    <!-- Main tanks -->
+                    <rect x="50" y="50" width="60" height="100" class="tank" />
+                    <rect x="290" y="50" width="60" height="100" class="tank" />
+                    
+                    <!-- Pipeline system -->
+                    <line x1="110" y1="100" x2="150" y2="100" class="pipeline" />
+                    <line x1="150" y1="100" x2="150" y2="50" class="pipeline" />
+                    <line x1="150" y1="50" x2="250" y2="50" class="pipeline" />
+                    <line x1="150" y1="100" x2="250" y2="100" class="pipeline" />
+                    <line x1="150" y1="150" x2="250" y2="150" class="pipeline" />
+                    <line x1="250" y1="50" x2="250" y2="150" class="pipeline" />
+                    <line x1="250" y1="100" x2="290" y2="100" class="pipeline" />
+                    
+                    <!-- Labels -->
+                    <text x="80" y="40" text-anchor="middle">Main Tank 1</text>
+                    <text x="320" y="40" text-anchor="middle">Main Tank 2</text>
+                </svg>
+            </div>
+            
+            <div class="card">
+                <h2>Data Points to Track</h2>
+                <p>The following metrics will be tracked in the water management system:</p>
+                
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <h4>Water Flow</h4>
+                        <p>Measure flow rates at different pipeline points</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Tank Levels</h4>
+                        <p>Monitor water levels in both main tanks</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Room Consumption</h4>
+                        <p>Track individual room water usage</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Pressure Levels</h4>
+                        <p>Monitor water pressure in the system</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Temperature</h4>
+                        <p>Track water temperature variations</p>
+                    </div>
+                    
+                    <div class="metric">
+                        <h4>Usage Patterns</h4>
+                        <p>Identify peak usage times and trends</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 20px;">Specific Measurement Points</h3>
+                <div class="data-points">
+                    <div class="data-item">Main inlet flow rate</div>
+                    <div class="data-item">Tank 1 input flow</div>
+                    <div class="data-item">Tank 2 input flow</div>
+                    <div class="data-item">Tank 1 water level</div>
+                    <div class="data-item">Tank 2 water level</div>
+                    <div class="data-item">Floor 1 main flow</div>
+                    <div class="data-item">Floor 2 main flow</div>
+                    <div class="data-item">Floor 3 main flow</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Data Model Design</h2>
+            <p>The following data structure will be used to store and manage water system information:</p>
+            
+            <div class="data-model">
+                <pre>
+{
+  "system": {
+    "tanks": [
+      {
+        "id": "tank1",
+        "capacity": 5000, // liters
+        "currentLevel": 3750, // liters
+        "temperature": 25.5, // celsius
+        "lastMaintenance": "2023-10-15"
+      },
+      {
+        "id": "tank2",
+        "capacity": 5000,
+        "currentLevel": 4200,
+        "temperature": 24.8,
+        "lastMaintenance": "2023-10-20"
+      }
+    ],
+    "pipes": [
+      {
+        "id": "mainInlet",
+        "flowRate": 45.2, // liters per minute
+        "pressure": 210.5, // kPa
+        "status": "normal"
+      },
+      {
+        "id": "floor1Main",
+        "flowRate": 15.3,
+        "pressure": 195.2,
+        "status": "normal"
+      },
+      // Additional pipeline segments
+    ]
+  },
+  "rooms": [
+    {
+      "id": "101",
+      "floor": 1,
+      "occupants": 3,
+      "currentFlowRate": 2.1, // liters per minute
+      "dailyUsage": 185.5, // liters
+      "monthlyUsage": 4560.2 // liters
+    },
+    // Additional rooms
+  ],
+  "metrics": {
+    "totalConsumption": {
+      "currentDay": 1250.5, // liters
+      "currentWeek": 8750.3,
+      "currentMonth": 34520.8
+    },
+    "peakUsageTimes": [
+      {"hour": 7, "averageUsage": 245.5},
+      {"hour": 19, "averageUsage": 210.3},
+      // Additional peak times
+    ],
+    "leakDetection": {
+      "status": "normal",
+      "lastIncident": null
+    }
+  },
+  "timestamp": "2023-11-05T14:30:00Z"
+}
+                </pre>
+            </div>
+        </div>
+        
+        <div class="day-navigation">
+            <button class="nav-btn" disabled>Previous Day</button>
+            <button class="nav-btn" onclick="window.location.href='day2.html'">Next Day</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation for the progress bar
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.querySelector('.progress');
+            let width = 10;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width += 10;
+                    progressBar.style.width = width + '%';
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>
